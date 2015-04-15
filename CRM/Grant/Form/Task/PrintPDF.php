@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.2                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
@@ -46,24 +46,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
    */
   function preProcess() {
     parent::preprocess();
-
-    // set print view, so that print templates are called
-    $this->controller->setPrint(1);
-
-    // get the formatted params
-    $queryParams = $this->get('queryParams');
-
-    $sortID = NULL;
-    if ($this->get(CRM_Utils_Sort::SORT_ID)) {
-      $sortID = CRM_Utils_Sort::sortIDValue($this->get(CRM_Utils_Sort::SORT_ID),
-        $this->get(CRM_Utils_Sort::SORT_DIRECTION)
-      );
-    }
-
-    $selector = new CRM_Grant_Selector_Search($queryParams, $this->_action, $this->_componentClause);
-    $controller = new CRM_Core_Selector_Controller($selector, NULL, $sortID, CRM_Core_Action::VIEW, $this, CRM_Core_Selector_Controller::SCREEN);
-    $controller->setEmbedded(TRUE);
-    $controller->run();
+    
   }
 
    /**
@@ -75,10 +58,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
    */
   function buildQuickForm() {
     // Process grants and assign to TPL 
-    $grantIds = $this->getVar('_grantIds');
     $config = CRM_Core_Config::singleton();
-    foreach ($grantIds as $gid) {
-      $fileArray = array();
+    $fileArray = array();
+    foreach ($this->_grantIds as $gid) {
       $values = array();
       $params['id'] = $gid;
       CRM_Grant_BAO_Grant::retrieve($params, $values);
@@ -96,10 +78,11 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
         $columnName = $cfDefaults['column_name'];
         
         //table name of custom data
-        $tableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup',
-                                                 $cfDefaults['custom_group_id'],
-                                                 'table_name', 'id'
-                                                 );
+        $tableName = CRM_Core_DAO::getFieldValue(
+          'CRM_Core_DAO_CustomGroup',
+          $cfDefaults['custom_group_id'],
+          'table_name', 'id'
+        );
         
         //query to fetch id from civicrm_file
         $query = "SELECT {$columnName} FROM {$tableName} where entity_id = {$gid}";
@@ -268,11 +251,11 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
    * @return string
    */
   function getHookedTemplateFileName() {
+    // FIXME : Get Message Template
     return 'PrintGrantPDF/GrantPDF.tpl';
   }
 
   function generatePDF($values, $html, $fileArray) {
-    global $base_url;
     require_once("packages/dompdf/dompdf_config.inc.php");
     spl_autoload_register('DOMPDF_autoload');
     $fileName = 'Grant_'.$values['contact_id'].'_'.$values['grant_id'].'.pdf';
