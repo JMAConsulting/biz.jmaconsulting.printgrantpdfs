@@ -188,6 +188,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
                 $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $fileDAO->uri);  
                 break;
               case "application/vnd.ms-excel":
+                if (!file_exists($config->customFileUploadDir.$fileDAO->uri)) {
+                  break;
+                }
                 $fileArray[] = self::convertXLStoPDF($fileDAO, 'custom');
               default:
                 break;
@@ -230,6 +233,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
             $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $attachValue['fileName']);
             break;
           case "application/vnd.ms-excel":
+            if (!file_exists($attachValue['fullPath'])) {
+              break;
+            }
             $fileArray[] = self::convertXLStoPDF($attachValue, 'attachment');
           default:
             break;
