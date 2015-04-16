@@ -46,7 +46,6 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
    */
   function preProcess() {
     parent::preprocess();
-    
   }
 
    /**
@@ -60,6 +59,8 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     // Process grants and assign to TPL 
     $config = CRM_Core_Config::singleton();
     $fileArray = array();
+    // FIXME: ADD currency in smarty
+    $pdfTemplate = $this->getPDFMessageTemplate();
     foreach ($this->_grantIds as $gid) {
       $values = array();
       $params['id'] = $gid;
@@ -76,7 +77,11 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
         $cfDefaults = array();
         CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $cfParams, $cfDefaults);
         $columnName = $cfDefaults['column_name'];
-        
+        /*
+        $customData[$count]['label'] = $cfDefaults['label'];
+        $customData[$count]['html_type'] = $cfDefaults['html_type'];
+        $customData[$count]['data_type'] = $cfDefaults['data_type'];
+        */
         //table name of custom data
         $tableName = CRM_Core_DAO::getFieldValue(
           'CRM_Core_DAO_CustomGroup',
@@ -225,11 +230,10 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
           }
         }
       } 
-      $tplFile = $this->getHookedTemplateFileName();
       unset($values['attachment']);
       CRM_Core_Smarty::singleton()->assign('values', $values);
       // Generate PDF
-      $out = CRM_Core_Smarty::singleton()->fetch($tplFile);
+      $out = CRM_Core_Smarty::singleton()->fetch("string:{$pdfTemplate}");
       $files[] = self::generatePDF($values, $out, $fileArray);
     }
     $zip = $config->customFileUploadDir . '/Grants_' . date('YmdHis') . '.zip';
@@ -250,9 +254,14 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
   /**
    * @return string
    */
-  function getHookedTemplateFileName() {
-    // FIXME : Get Message Template
-    return 'PrintGrantPDF/GrantPDF.tpl';
+  function getPDFMessageTemplate() {
+    $query = 'SELECT msg_html html
+      FROM civicrm_msg_template mt
+      JOIN civicrm_option_value ov ON workflow_id = ov.id
+      JOIN civicrm_option_group og ON ov.option_group_id = og.id
+      WHERE og.name = %1 AND ov.name = %2 AND mt.is_default = 1';
+    $sqlParams = array(1 => array('msg_tpl_workflow_grant', 'String'), 2 => array('grant_print_pdf', 'String'));
+    return CRM_Core_DAO::singleValueQuery($query, $sqlParams);
   }
 
   function generatePDF($values, $html, $fileArray) {
