@@ -179,6 +179,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
                 $values['custom'][$keys]['value'] = $data;
                 break;
               case "application/msword":
+                if (!file_exists($config->customFileUploadDir.$fileDAO->uri)) {
+                  break;
+                }
                 $originFilePath = $config->customFileUploadDir.$fileDAO->uri;
                 $outputDirPath  = $config->customFileUploadDir;
                 CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
@@ -218,6 +221,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
             $values['attach'][$keys]['value'] = $data;
             break;
           case "application/msword":
+            if (!file_exists($attachValue['fullPath'])) {
+              break;
+            }
             $originFilePath = $attachValue['fullPath'];
             $outputDirPath  = $config->customFileUploadDir;
             CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
