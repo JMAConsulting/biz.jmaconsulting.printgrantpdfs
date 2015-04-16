@@ -59,6 +59,8 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     // Process grants and assign to TPL 
     $config = CRM_Core_Config::singleton();
     $fileArray = array();
+    define('DOMPDF_ENABLE_REMOTE', TRUE);
+    define('DOMPDF_ENABLE_AUTOLOAD', FALSE);
     $pdfTemplate = $this->getPDFMessageTemplate();
     foreach ($this->_grantIds as $gid) {
       $values = array();
@@ -221,9 +223,14 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
   }
 
   function generatePDF($values, $html, $fileArray) {
-    define('DOMPDF_ENABLE_REMOTE', TRUE);
-    define('DOMPDF_ENABLE_AUTOLOAD', FALSE);
-    require_once 'vendor/dompdf/dompdf/dompdf_config.inc.php';
+    global $civicrm_root;
+    if (!file_exists($civicrm_root . '/packages/dompdf/dompdf_config.inc.php')) {
+      require_once 'vendor/dompdf/dompdf/dompdf_config.inc.php';
+    }
+    else {
+      require_once("packages/dompdf/dompdf_config.inc.php");
+      spl_autoload_register('DOMPDF_autoload');      
+    }
     $fileName = 'Grant_'.$values['contact_id'].'_'.$values['grant_id'].'.pdf';
     $config = CRM_Core_Config::singleton();
     $filePath = $config->customFileUploadDir . $fileName;
@@ -265,9 +272,12 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     }
 
     $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
-    $rendererLibraryPath = $civicrm_root . '/vendor/dompdf/dompdf';
-    define('DOMPDF_ENABLE_REMOTE', TRUE);
-    define('DOMPDF_ENABLE_AUTOLOAD', FALSE);
+    if (!file_exists($civicrm_root . '/packages/dompdf/dompdf_config.inc.php')) {
+      $rendererLibraryPath = $civicrm_root . '/vendor/dompdf/dompdf';
+    }
+    else {
+      $rendererLibraryPath = $civicrm_root . '/packages/dompdf';      
+    }
     if (!PHPExcel_Settings::setPdfRenderer($rendererName,$rendererLibraryPath)) {
       CRM_Core_Error::fatal(ts('NOTICE: Please set the $rendererName and $rendererLibraryPath values' .
                                '<br />' .
