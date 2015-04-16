@@ -265,7 +265,9 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     }
 
     $rendererName = PHPExcel_Settings::PDF_RENDERER_DOMPDF;
-    $rendererLibraryPath = $civicrm_root . '/packages/dompdf';
+    $rendererLibraryPath = $civicrm_root . '/vendor/dompdf/dompdf';
+    define('DOMPDF_ENABLE_REMOTE', TRUE);
+    define('DOMPDF_ENABLE_AUTOLOAD', FALSE);
     if (!PHPExcel_Settings::setPdfRenderer($rendererName,$rendererLibraryPath)) {
       CRM_Core_Error::fatal(ts('NOTICE: Please set the $rendererName and $rendererLibraryPath values' .
                                '<br />' .
