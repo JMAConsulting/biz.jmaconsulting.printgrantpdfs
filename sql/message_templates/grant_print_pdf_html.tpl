@@ -15,19 +15,19 @@
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Application Received Date{/ts}</td>
-	  <td {$valueStyle}>{$values.application_received_date|crmDate}</td>
+	  <td {$valueStyle}>{$values.application_received_date}</td>
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Decision Date{/ts}</td>
-	  <td {$valueStyle}>{$values.decision_date|crmDate}</td>
+	  <td {$valueStyle}>{$values.decision_date}</td>
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Money Transferred Date{/ts}</td>
-	  <td {$valueStyle}>{$values.money_divansfer_date|crmDate}</td>
+	  <td {$valueStyle}>{$values.money_divansfer_date}</td>
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Due Date{/ts}</td>
-	  <td {$valueStyle}>{$values.grant_due_date|crmDate}</td>
+	  <td {$valueStyle}>{$values.grant_due_date}</td>
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Total Amount{/ts}</td>

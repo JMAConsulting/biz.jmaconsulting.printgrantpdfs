@@ -155,3 +155,4 @@ INNER JOIN civicrm_msg_template ON civicrm_msg_template.workflow_id = civicrm_op
 WHERE civicrm_option_group.name LIKE 'msg_tpl_workflow_grant' AND civicrm_option_value.name = 'grant_print_pdf'"
     );    
   }
+}
