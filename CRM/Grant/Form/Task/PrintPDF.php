@@ -88,7 +88,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       if (!empty($custom)) {
         $fileDAO = new CRM_Core_BAO_File();
         foreach ($custom as $keys => $cValue) {
-          $vals = array();
+          $vals = $fileArray = array();
           $cfParams = array('id' => $keys);
           CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $cfParams, $vals);
           $vals['data'] = $vals['value'] = $cValue;
