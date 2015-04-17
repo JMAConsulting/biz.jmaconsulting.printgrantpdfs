@@ -46,7 +46,7 @@ class CRM_Printgrantpdfs_Upgrader extends CRM_Printgrantpdfs_Upgrader_Base {
   public function upgrade_4500() {
     $this->ctx->log->info('Applying update 1.1');
     $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('currentDirectoryPath', __DIR__);
+    $smarty->assign('currentDirectoryPath', __DIR__ . '/../../');
     CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/../../sql/civicrm_msg_template.tpl'), NULL, TRUE);
     return TRUE;
   }
