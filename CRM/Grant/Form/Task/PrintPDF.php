@@ -101,6 +101,10 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
             $values['custom'][$keys]['value'] = strip_tags($vals['value']);
           } 
           elseif ( $vals['html_type'] == "File" ) {
+            if (empty($vals['value'])) {
+              $values['custom'][$keys]['value'] = '';
+              continue;
+            }
             $fileDAO->id = $vals['value'];
             if( $fileDAO->find(true) ) {
               $source = CRM_Utils_System::url("civicrm/file", "reset=1&eid=$gid&id=$fileDAO->id", TRUE, NULL, FALSE);
