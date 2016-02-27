@@ -63,7 +63,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     define('DOMPDF_ENABLE_AUTOLOAD', FALSE);
     $pdfTemplate = $this->getPDFMessageTemplate();
     foreach ($this->_grantIds as $gid) {
-      $values = array();
+      $values = $fileArray = array();
       $params['id'] = $gid;
       CRM_Grant_BAO_Grant::retrieve($params, $values);
       $values['attachment'] = CRM_Core_BAO_File::getEntityFile('civicrm_grant', $gid);
@@ -88,7 +88,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       if (!empty($custom)) {
         $fileDAO = new CRM_Core_BAO_File();
         foreach ($custom as $keys => $cValue) {
-          $vals = $fileArray = array();
+          $vals = array();
           $cfParams = array('id' => $keys);
           CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $cfParams, $vals);
           $vals['data'] = $vals['value'] = $cValue;
