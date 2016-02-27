@@ -155,14 +155,14 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
           case "image/jpeg":
           case "image/png":
             $source = CRM_Utils_System::url("civicrm/file", "reset=1&eid=".$gid."&id=".$attachValue['fileID']."", TRUE, NULL, FALSE);
-            $values['attach'][$keys]['label'] = 'Attachment';
-            $values['attach'][$keys]['value'] = "<img src='".$source."' />";
+            $values['attach'][$attachKey]['label'] = 'Attachment';
+            $values['attach'][$attachKey]['value'] = "<img src='".$source."' />";
           break;
           case "text/plain":
             $raw = file($attachValue['fullPath']);
             $data = implode('<br>', $raw);
-            $values['attach'][$keys]['label'] = 'Attachment';
-            $values['attach'][$keys]['value'] = $data;
+            $values['attach'][$attachKey]['label'] = 'Attachment';
+            $values['attach'][$attachKey]['value'] = $data;
             break;
           case "application/rtf":
             $raw = file($attachValue['fullPath']);
@@ -170,8 +170,8 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
               $text[] = strip_tags($plain);
             }
             $data = implode('<br>', $text);
-            $values['attach'][$keys]['label'] = 'Attachment';
-            $values['attach'][$keys]['value'] = $data;
+            $values['attach'][$attachKey]['label'] = 'Attachment';
+            $values['attach'][$attachKey]['value'] = $data;
             break;
           case "application/msword":
             if (!file_exists($attachValue['fullPath'])) {
