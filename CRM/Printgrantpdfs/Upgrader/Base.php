@@ -36,11 +36,11 @@ class CRM_Printgrantpdfs_Upgrader_Base {
    * Obtain a reference to the active upgrade handler.
    */
   static public function instance() {
-    if (! self::$instance) {
+    if (!self::$instance) {
       // FIXME auto-generate
       self::$instance = new CRM_Printgrantpdfs_Upgrader(
         'biz.jmaconsulting.printgrantpdfs',
-        realpath(__DIR__ .'/../../../')
+        realpath(__DIR__ . '/../../../')
       );
     }
     return self::$instance;
@@ -126,7 +126,7 @@ class CRM_Printgrantpdfs_Upgrader_Base {
   }
 
   /**
-   * Syntatic sugar for enqueuing a task which calls a function in this class. 
+   * Syntatic sugar for enqueuing a task which calls a function in this class.
    *
    * The task is weighted so that it is processed
    * as part of the currently-pending revision.
@@ -205,7 +205,7 @@ class CRM_Printgrantpdfs_Upgrader_Base {
    * @return array(revisionNumbers) sorted numerically
    */
   public function getRevisions() {
-    if (! is_array($this->revisions)) {
+    if (!is_array($this->revisions)) {
       $this->revisions = array();
 
       $clazz = new ReflectionClass(get_class($this));
