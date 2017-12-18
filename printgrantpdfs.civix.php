@@ -16,7 +16,7 @@ function _printgrantpdfs_civix_civicrm_config(&$config = NULL) {
 
   $template =& CRM_Core_Smarty::singleton();
 
-  $extRoot = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+  $extRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR;
   $extDir = $extRoot . 'templates';
 
   if (is_array($template->template_dir)) {
@@ -253,11 +253,11 @@ function _printgrantpdfs_civix_insert_navigation_menu(&$menu, $path, $item, $par
         'navID' => $navId,
       )),
     );
-    return true;
+    return TRUE;
   }
   else {
     // Find an recurse into the next level down
-    $found = false;
+    $found = FALSE;
     $path = explode('/', $path);
     $first = array_shift($path);
     foreach ($menu as $key => &$entry) {

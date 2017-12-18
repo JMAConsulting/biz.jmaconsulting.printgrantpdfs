@@ -3,7 +3,7 @@
 require_once 'printgrantpdfs.civix.php';
 
 /**
- * Implementation of hook_civicrm_config
+ * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
@@ -12,9 +12,7 @@ function printgrantpdfs_civicrm_config(&$config) {
 }
 
 /**
- * Implementation of hook_civicrm_xmlMenu
- *
- * @param $files array(string)
+ * Implements hook_civicrm_xmlMenu().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
  */
@@ -23,7 +21,7 @@ function printgrantpdfs_civicrm_xmlMenu(&$files) {
 }
 
 /**
- * Implementation of hook_civicrm_install
+ * Implements hook_civicrm_install().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
@@ -36,11 +34,12 @@ function printgrantpdfs_civicrm_install() {
     CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'), NULL, TRUE);
   }
   else {
-    CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'));}
+    CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'));
+  }
 }
 
 /**
- * Implementation of hook_civicrm_uninstall
+ * Implements hook_civicrm_uninstall().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
@@ -50,7 +49,7 @@ function printgrantpdfs_civicrm_uninstall() {
 }
 
 /**
- * Implementation of hook_civicrm_enable
+ * Implements hook_civicrm_enable().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
@@ -60,7 +59,7 @@ function printgrantpdfs_civicrm_enable() {
 }
 
 /**
- * Implementation of hook_civicrm_disable
+ * Implements hook_civicrm_disable().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
@@ -70,13 +69,7 @@ function printgrantpdfs_civicrm_disable() {
 }
 
 /**
- * Implementation of hook_civicrm_upgrade
- *
- * @param $op string, the type of operation being performed; 'check' or 'enqueue'
- * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
- *
- * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
- *                for 'enqueue', returns void
+ * Implements hook_civicrm_upgrade().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
@@ -85,7 +78,7 @@ function printgrantpdfs_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * Implementation of hook_civicrm_managed
+ * Implements hook_civicrm_managed().
  *
  * Generate a list of entities to create/deactivate/delete when this module
  * is installed, disabled, uninstalled.
@@ -97,7 +90,7 @@ function printgrantpdfs_civicrm_managed(&$entities) {
 }
 
 /**
- * Implementation of hook_civicrm_caseTypes
+ * Implements hook_civicrm_caseTypes().
  *
  * Generate a list of case-types
  *
@@ -110,7 +103,7 @@ function printgrantpdfs_civicrm_caseTypes(&$caseTypes) {
 }
 
 /**
- * Implementation of hook_civicrm_alterSettingsFolders
+ * Implements hook_civicrm_alterSettingsFolders().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
@@ -131,32 +124,31 @@ function printgrantpdfs_civicrm_searchTasks($objectType, &$tasks) {
 /**
  * function to disable/enable/delete message template
  *
- * @param integer $action 
+ * @param int $action
  *
  */
-
 function printgrantpdfs_enableDisableMessageTemplate($action) {
-  if ($action < 2) { 
+  if ($action < 2) {
     CRM_Core_DAO::executeQuery(
-      "UPDATE civicrm_option_value 
+      "UPDATE civicrm_option_value
        INNER JOIN civicrm_option_group ON  civicrm_option_value.option_group_id = civicrm_option_group.id
        INNER JOIN civicrm_msg_template ON civicrm_msg_template.workflow_id = civicrm_option_value.id
          SET civicrm_option_value.is_active = %1,
            civicrm_option_group.is_active = %1,
            civicrm_msg_template.is_active = %1
-       WHERE civicrm_option_group.name LIKE 'msg_tpl_workflow_grant' AND civicrm_option_value.name = 'grant_print_pdf'", 
+       WHERE civicrm_option_group.name LIKE 'msg_tpl_workflow_grant' AND civicrm_option_value.name = 'grant_print_pdf'",
       array(
-        1 => array($action, 'Integer')
+        1 => array($action, 'Integer'),
       )
-    ); 
+    );
   }
-  else { 
+  else {
     CRM_Core_DAO::executeQuery(
-      "DELETE  civicrm_option_value.*, civicrm_option_group.*, civicrm_msg_template.* 
-FROM civicrm_option_value 
+      "DELETE  civicrm_option_value.*, civicrm_option_group.*, civicrm_msg_template.*
+FROM civicrm_option_value
 INNER JOIN civicrm_option_group ON  civicrm_option_value.option_group_id = civicrm_option_group.id
 INNER JOIN civicrm_msg_template ON civicrm_msg_template.workflow_id = civicrm_option_value.id
 WHERE civicrm_option_group.name LIKE 'msg_tpl_workflow_grant' AND civicrm_option_value.name = 'grant_print_pdf'"
-    );    
+    );
   }
 }

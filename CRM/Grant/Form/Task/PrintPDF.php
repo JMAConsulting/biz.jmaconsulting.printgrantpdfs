@@ -23,7 +23,7 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
-*/
+ */
 use Dompdf\Dompdf;
 /**
  *
@@ -44,19 +44,19 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
    * @return void
    * @access public
    */
-  function preProcess() {
+  public function preProcess() {
     parent::preprocess();
   }
 
-   /**
+  /**
    * Build the form
    *
    * @access public
    *
    * @return void
    */
-  function buildQuickForm() {
-    // Process grants and assign to TPL 
+  public function buildQuickForm() {
+    // Process grants and assign to TPL
     $config = CRM_Core_Config::singleton();
     $fileArray = array();
     define('DOMPDF_ENABLE_REMOTE', TRUE);
@@ -83,7 +83,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       $values['amount_total'] = isset($values['amount_total']) ? $values['amount_total'] : '0.00';
       $values['amount_requested'] = isset($values['amount_requested']) ? $values['amount_requested'] : '0.00';
       $values['amount_granted'] = isset($values['amount_granted']) ? $values['amount_granted'] : '0.00';
-      
+
       $custom = CRM_Core_BAO_CustomValueTable::getEntityValues($gid, 'Grant');
       if (!empty($custom)) {
         $fileDAO = new CRM_Core_BAO_File();
@@ -93,105 +93,115 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
           CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $cfParams, $vals);
           $vals['data'] = $vals['value'] = $cValue;
           $values['custom'][$keys]['label'] = $vals['label'];
-          
+
           if (!in_array($vals['html_type'], array('RichTextEditor', 'File'))) {
             $values['custom'][$keys]['value'] = CRM_Core_BAO_CustomGroup::formatCustomValues($vals, $vals);
           }
           elseif ($vals['html_type'] == "RichTextEditor") {
             $values['custom'][$keys]['value'] = strip_tags($vals['value']);
-          } 
-          elseif ( $vals['html_type'] == "File" ) {
+          }
+          elseif ($vals['html_type'] == "File") {
             if (empty($vals['value'])) {
               $values['custom'][$keys]['value'] = '';
               continue;
             }
             $fileDAO->id = $vals['value'];
-            if( $fileDAO->find(true) ) {
+            if ($fileDAO->find(TRUE)) {
               $source = CRM_Utils_System::url("civicrm/file", "reset=1&eid=$gid&id=$fileDAO->id", TRUE, NULL, FALSE);
-              switch( $fileDAO->mime_type ) {
-              case "text/plain":
-                $raw = file($source);
-                $data = implode('<br>', $raw);
-                $values['custom'][$keys]['value'] = $data;
-                break;
-              case "image/jpeg":
-              case "image/png":
-                $values['custom'][$keys]['value'] = "<img src='".$source."' />";
-              break;
-              case "application/rtf":
-                $raw = file($source);
-                foreach ( $raw as $plain ) {
-                  $text[] = strip_tags($plain);
-                }
-                $data = implode('<br>', $text);
-                $html .="<tr><td><b>Attachment<b></td><td>".$data."</td></tr>";
-                $values['custom'][$keys]['label'] = 'Attachment';
-                $values['custom'][$keys]['value'] = $data;
-                break;
-              case "application/msword":
-                if (!file_exists($config->customFileUploadDir.$fileDAO->uri)) {
+              switch ($fileDAO->mime_type) {
+                case "text/plain":
+                  $raw = file($source);
+                  $data = implode('<br>', $raw);
+                  $values['custom'][$keys]['value'] = $data;
                   break;
-                }
-                $originFilePath = $config->customFileUploadDir.$fileDAO->uri;
-                $outputDirPath  = $config->customFileUploadDir;
-                CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
-                $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $fileDAO->uri);  
-                break;
-              case "application/vnd.ms-excel":
-                if (!file_exists($config->customFileUploadDir.$fileDAO->uri)) {
+
+                case "image/jpeg":
+                case "image/png":
+                  $values['custom'][$keys]['value'] = "<img src='" . $source . "' />";
                   break;
-                }
-                $fileArray[] = self::convertXLStoPDF($fileDAO, 'custom');
-              default:
-                break;
+
+                case "application/rtf":
+                  $raw = file($source);
+                  foreach ($raw as $plain) {
+                    $text[] = strip_tags($plain);
+                  }
+                  $data = implode('<br>', $text);
+                  $html .= "<tr><td><b>Attachment<b></td><td>" . $data . "</td></tr>";
+                  $values['custom'][$keys]['label'] = 'Attachment';
+                  $values['custom'][$keys]['value'] = $data;
+                  break;
+
+                case "application/msword":
+                  if (!file_exists($config->customFileUploadDir . $fileDAO->uri)) {
+                    break;
+                  }
+                  $originFilePath = $config->customFileUploadDir . $fileDAO->uri;
+                  $outputDirPath  = $config->customFileUploadDir;
+                  CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
+                  $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $fileDAO->uri);
+                  break;
+
+                case "application/vnd.ms-excel":
+                  if (!file_exists($config->customFileUploadDir . $fileDAO->uri)) {
+                    break;
+                  }
+                  $fileArray[] = self::convertXLStoPDF($fileDAO, 'custom');
+
+                default:
+                  break;
               }
             }
           }
         }
-      } 
+      }
       if (!empty($values['attachment'])) {
-        foreach( $values['attachment'] as $attachKey => $attachValue ) {
-          switch( $attachValue['mime_type'] ) {
-          case "image/jpeg":
-          case "image/png":
-            $source = CRM_Utils_System::url("civicrm/file", "reset=1&eid=".$gid."&id=".$attachValue['fileID']."", TRUE, NULL, FALSE);
-            $values['attach'][$attachKey]['label'] = 'Attachment';
-            $values['attach'][$attachKey]['value'] = "<img src='".$source."' />";
-          break;
-          case "text/plain":
-            $raw = file($attachValue['fullPath']);
-            $data = implode('<br>', $raw);
-            $values['attach'][$attachKey]['label'] = 'Attachment';
-            $values['attach'][$attachKey]['value'] = $data;
-            break;
-          case "application/rtf":
-            $raw = file($attachValue['fullPath']);
-            foreach ( $raw as $plain ) {
-              $text[] = strip_tags($plain);
-            }
-            $data = implode('<br>', $text);
-            $values['attach'][$attachKey]['label'] = 'Attachment';
-            $values['attach'][$attachKey]['value'] = $data;
-            break;
-          case "application/msword":
-            if (!file_exists($attachValue['fullPath'])) {
+        foreach ($values['attachment'] as $attachKey => $attachValue) {
+          switch ($attachValue['mime_type']) {
+            case "image/jpeg":
+            case "image/png":
+              $source = CRM_Utils_System::url("civicrm/file", "reset=1&eid=" . $gid . "&id=" . $attachValue['fileID'] . "", TRUE, NULL, FALSE);
+              $values['attach'][$attachKey]['label'] = 'Attachment';
+              $values['attach'][$attachKey]['value'] = "<img src='" . $source . "' />";
               break;
-            }
-            $originFilePath = $attachValue['fullPath'];
-            $outputDirPath  = $config->customFileUploadDir;
-            CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
-            $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $attachValue['fileName']);
-            break;
-          case "application/vnd.ms-excel":
-            if (!file_exists($attachValue['fullPath'])) {
+
+            case "text/plain":
+              $raw = file($attachValue['fullPath']);
+              $data = implode('<br>', $raw);
+              $values['attach'][$attachKey]['label'] = 'Attachment';
+              $values['attach'][$attachKey]['value'] = $data;
               break;
-            }
-            $fileArray[] = self::convertXLStoPDF($attachValue, 'attachment');
-          default:
-            break;
+
+            case "application/rtf":
+              $raw = file($attachValue['fullPath']);
+              foreach ($raw as $plain) {
+                $text[] = strip_tags($plain);
+              }
+              $data = implode('<br>', $text);
+              $values['attach'][$attachKey]['label'] = 'Attachment';
+              $values['attach'][$attachKey]['value'] = $data;
+              break;
+
+            case "application/msword":
+              if (!file_exists($attachValue['fullPath'])) {
+                break;
+              }
+              $originFilePath = $attachValue['fullPath'];
+              $outputDirPath  = $config->customFileUploadDir;
+              CRM_Unoconv_Unoconv::convertToPdf($originFilePath, $outputDirPath);
+              $fileArray[] = $outputDirPath . str_replace('.doc', '.pdf', $attachValue['fileName']);
+              break;
+
+            case "application/vnd.ms-excel":
+              if (!file_exists($attachValue['fullPath'])) {
+                break;
+              }
+              $fileArray[] = self::convertXLStoPDF($attachValue, 'attachment');
+
+            default:
+              break;
           }
         }
-      } 
+      }
       unset($values['attachment']);
       CRM_Core_Smarty::singleton()->assign('values', $values);
       // Generate PDF
@@ -217,7 +227,7 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
   /**
    * @return string
    */
-  function getPDFMessageTemplate() {
+  public function getPDFMessageTemplate() {
     $query = 'SELECT msg_html html
       FROM civicrm_msg_template mt
       JOIN civicrm_option_value ov ON workflow_id = ov.id
@@ -227,49 +237,49 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
     return CRM_Core_DAO::singleValueQuery($query, $sqlParams);
   }
 
-  function generatePDF($values, $html, $fileArray) {
+  public function generatePDF($values, $html, $fileArray) {
     global $civicrm_root;
     if (file_exists($civicrm_root . '/vendor/dompdf/dompdf/dompdf_config.inc.php')) {
       require_once 'vendor/dompdf/dompdf/dompdf_config.inc.php';
     }
     elseif (file_exists($civicrm_root . '/packages/dompdf/dompdf_config.inc.php')) {
-      require_once("packages/dompdf/dompdf_config.inc.php");
-      spl_autoload_register('DOMPDF_autoload');      
+      require_once 'packages/dompdf/dompdf_config.inc.php';
+      spl_autoload_register('DOMPDF_autoload');
     }
-    $fileName = 'Grant_'.$values['contact_id'].'_'.$values['grant_id'].'.pdf';
+    $fileName = 'Grant_' . $values['contact_id'] . '_' . $values['grant_id'] . '.pdf';
     $config = CRM_Core_Config::singleton();
     $filePath = $config->customFileUploadDir . $fileName;
-    
+
     $dompdf = new DOMPDF();
-    
+
     $dompdf->load_html($html);
     $dompdf->render();
-    
+
     file_put_contents($filePath, $dompdf->output());
-    
+
     // Merge attachments and files attached to custom fields
     if (!empty($fileArray)) {
       array_unshift($fileArray, $filePath);
-      $name = 'Grants_'.$values['contact_id'].'_'.$values['grant_id'].'.pdf';
-      $pdf = new CRM_PDFMerger_PDFMerger;
+      $name = 'Grants_' . $values['contact_id'] . '_' . $values['grant_id'] . '.pdf';
+      $pdf = new CRM_PDFMerger_PDFMerger();
       $pdfs = '$pdf';
-      foreach($fileArray as $file) {
-        $pdfs .= '->addPDF("'.$file.'", "all")';
+      foreach ($fileArray as $file) {
+        $pdfs .= '->addPDF("' . $file . '", "all")';
       }
-      $pdfs .= '->merge("file", "'.$config->customFileUploadDir.$name.'");';
+      $pdfs .= '->merge("file", "' . $config->customFileUploadDir . $name . '");';
       eval($pdfs);
       $filePath = $config->customFileUploadDir . $name;
     }
     return $filePath;
   }
 
-  function convertXLStoPDF($xls, $context) {
+  public function convertXLStoPDF($xls, $context) {
     global $civicrm_root;
     $config = CRM_Core_Config::singleton();
-    require_once ('packages/PHPExcel.php');
+    require_once 'packages/PHPExcel.php';
     if ($context == 'custom') {
       $fileName = $xls->uri;
-      $filePath = $config->customFileUploadDir.$xls->uri;
+      $filePath = $config->customFileUploadDir . $xls->uri;
     }
     else {
       $fileName = $xls['fileName'];
@@ -281,24 +291,25 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       $rendererLibraryPath = $civicrm_root . '/vendor/dompdf/dompdf';
     }
     else {
-      $rendererLibraryPath = $civicrm_root . '/packages/dompdf';      
+      $rendererLibraryPath = $civicrm_root . '/packages/dompdf';
     }
-    if (!PHPExcel_Settings::setPdfRenderer($rendererName,$rendererLibraryPath)) {
+    if (!PHPExcel_Settings::setPdfRenderer($rendererName, $rendererLibraryPath)) {
       CRM_Core_Error::fatal(ts('NOTICE: Please set the $rendererName and $rendererLibraryPath values' .
                                '<br />' .
                                'at the top of this script as appropriate for your directory structure'));
     }
     $outputDirPath  = $config->customFileUploadDir;
     $objPHPexcel = PHPExcel_IOFactory::load($filePath);
-    $objWriter = PHPExcel_IOFactory::createWriter($objPHPexcel, 'Excel5'); 
-    $objPHPexcel->addCellXf(new PHPExcel_Style);
-    $objPHPexcel->addCellStyleXf(new PHPExcel_Style);
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPexcel, 'Excel5');
+    $objPHPexcel->addCellXf(new PHPExcel_Style());
+    $objPHPexcel->addCellStyleXf(new PHPExcel_Style());
     $objPHPexcel->getDefaultStyle()->getFont()
       ->setName('Arila')
       ->setSize(10);
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPexcel, 'PDF');
-    $objWriter->setPreCalculateFormulas(false);
+    $objWriter->setPreCalculateFormulas(FALSE);
     $objWriter->save($outputDirPath . str_replace('.xls', '.pdf', $fileName));
     return $outputDirPath . str_replace('.xls', '.pdf', $fileName);
   }
+
 }

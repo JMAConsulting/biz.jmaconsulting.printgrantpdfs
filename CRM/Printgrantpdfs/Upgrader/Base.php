@@ -238,8 +238,10 @@ class CRM_Printgrantpdfs_Upgrader_Base {
     return TRUE;
   }
 
-  // ******** Hook delegates ********
-
+  /**
+   * Hook delegates
+   *
+   */
   public function onInstall() {
     $files = glob($this->extensionDir . '/sql/*_install.sql');
     if (is_array($files)) {
@@ -300,4 +302,5 @@ class CRM_Printgrantpdfs_Upgrader_Base {
       default:
     }
   }
+
 }
