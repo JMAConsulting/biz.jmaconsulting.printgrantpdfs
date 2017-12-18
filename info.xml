@@ -3,7 +3,7 @@
   <file>printgrantpdfs</file>
   <name>Print Grants as PDF</name>
   <description>Enhances the print grants to include custom fields and attachments while generating PDFs</description>
-  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/archive/v1.2.zip</downloadUrl>
+  <downloadUrl>https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/archive/printgrantpdfs-1.2.1.zip</downloadUrl>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>JMA Consulting</author>
@@ -11,15 +11,14 @@
   </maintainer>
   <urls>
     <url desc="Support">https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/issues?state=open</url>
-    <url desc="Installation Instructions for 1.2">https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/blob/1.2/README.md</url>
-    <url desc="Documentation">https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/blob/1.2/README.md</url>
+    <url desc="Installation Instructions for 1.2">https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/blob/master/README.md</url>
+    <url desc="Documentation">https://github.com/JMAConsulting/biz.jmaconsulting.printgrantpdfs/blob/master/README.md</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2016-02-27</releaseDate>
-  <version>1.2</version>
+  <releaseDate>2017-12-18</releaseDate>
+  <version>1.2.1</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>4.5</ver>
     <ver>4.6</ver>
     <ver>4.7</ver>
   </compatibility>
