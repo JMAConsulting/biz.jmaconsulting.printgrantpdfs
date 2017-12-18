@@ -32,7 +32,11 @@ function printgrantpdfs_civicrm_install() {
 
   $smarty = CRM_Core_Smarty::singleton();
   $smarty->assign('currentDirectoryPath', __DIR__);
-  CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'), NULL, TRUE);
+  if (!method_exists(new CRM_Utils_File(), 'runSqlQuery')) {
+    CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'), NULL, TRUE);
+  }
+  else {
+    CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'));}
 }
 
 /**

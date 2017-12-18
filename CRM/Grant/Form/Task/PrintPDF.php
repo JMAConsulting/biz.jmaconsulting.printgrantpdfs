@@ -24,7 +24,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 */
-
+use Dompdf\Dompdf;
 /**
  *
  * @package CRM
@@ -199,8 +199,8 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       $files[] = self::generatePDF($values, $out, $fileArray);
     }
     $zip = $config->customFileUploadDir . '/Grants_' . date('YmdHis') . '.zip';
-    $export = new CRM_Financial_BAO_ExportFormat();
-    $export->createZip($files, $zip, TRUE);
+    $export = new CRM_Financial_BAO_ExportFormat_CSV();
+    $export->createZip($files, $zip);
     // Initiate Download
     if (file_exists($zip)) {
       header('Content-Type: application/zip');
@@ -212,7 +212,8 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
       unlink($zip); //delete the zip to avoid clutter.
       CRM_Utils_System::civiExit();
     }
-  } 
+  }
+
   /**
    * @return string
    */
@@ -228,10 +229,10 @@ class CRM_Grant_Form_Task_PrintPDF extends CRM_Grant_Form_Task {
 
   function generatePDF($values, $html, $fileArray) {
     global $civicrm_root;
-    if (!file_exists($civicrm_root . '/packages/dompdf/dompdf_config.inc.php')) {
+    if (file_exists($civicrm_root . '/vendor/dompdf/dompdf/dompdf_config.inc.php')) {
       require_once 'vendor/dompdf/dompdf/dompdf_config.inc.php';
     }
-    else {
+    elseif (file_exists($civicrm_root . '/packages/dompdf/dompdf_config.inc.php')) {
       require_once("packages/dompdf/dompdf_config.inc.php");
       spl_autoload_register('DOMPDF_autoload');      
     }

@@ -23,7 +23,7 @@
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Money Transferred Date{/ts}</td>
-	  <td {$valueStyle}>{$values.money_divansfer_date}</td>
+	  <td {$valueStyle}>{$values.money_transfer_date}</td>
 	</tr>
 	<tr>
 	  <td {$labelStyle}>{ts}Grant Due Date{/ts}</td>
