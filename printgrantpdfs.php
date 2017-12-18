@@ -14,8 +14,6 @@ function printgrantpdfs_civicrm_config(&$config) {
 /**
  * Implements hook_civicrm_xmlMenu().
  *
- * @param $files array(string)
- *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
  */
 function printgrantpdfs_civicrm_xmlMenu(&$files) {
@@ -36,7 +34,8 @@ function printgrantpdfs_civicrm_install() {
     CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'), NULL, TRUE);
   }
   else {
-    CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'));}
+    CRM_Utils_File::runSqlQuery(CIVICRM_DSN, $smarty->fetch(__DIR__ . '/sql/civicrm_msg_template.tpl'));
+  }
 }
 
 /**
@@ -71,12 +70,6 @@ function printgrantpdfs_civicrm_disable() {
 
 /**
  * Implements hook_civicrm_upgrade().
- *
- * @param $op string, the type of operation being performed; 'check' or 'enqueue'
- * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
- *
- * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
- *                for 'enqueue', returns void
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
@@ -134,7 +127,6 @@ function printgrantpdfs_civicrm_searchTasks($objectType, &$tasks) {
  * @param int $action
  *
  */
-
 function printgrantpdfs_enableDisableMessageTemplate($action) {
   if ($action < 2) {
     CRM_Core_DAO::executeQuery(
