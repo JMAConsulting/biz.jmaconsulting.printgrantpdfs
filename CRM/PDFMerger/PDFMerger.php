@@ -171,7 +171,7 @@ class CRM_PDFMerger_PDFMerger {
         }
 
         //add middle pages
-        while($x <= $y) {
+        while ($x <= $y) {
           $newpages[] = (int) $x;
           $x++;
         }
