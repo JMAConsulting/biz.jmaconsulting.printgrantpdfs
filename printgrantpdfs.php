@@ -113,7 +113,7 @@ function printgrantpdfs_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 
 function printgrantpdfs_civicrm_searchTasks($objectType, &$tasks) {
   if ($objectType == 'grant') {
-    $tasks[CRM_Grant_Task::PRINT_GRANTS] = array(
+    $tasks[CRM_Grant_Task::TASK_PRINT] = array(
       'title' => ts('Print Grants as PDF'),
       'class' => 'CRM_Grant_Form_Task_PrintPDF',
       'result' => FALSE,
